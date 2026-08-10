@@ -2,8 +2,60 @@
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --color-ink: #080808;
+    --color-charcoal: #121212;
+    --color-warm: #f6f5f2;
+    --color-silver: #b7b7b7;
+    --color-muted: #777777;
+    --color-line: #e7e7e7;
+    --ease-editorial: cubic-bezier(.22, 1, .36, 1);
+}
+
+@layer base {
+    html { scroll-behavior: smooth; }
+    body { @apply bg-white font-sans text-ink antialiased; }
+    body.menu-open { overflow: hidden; }
+    h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 500; }
+    a, button { -webkit-tap-highlight-color: transparent; }
+    button, a { @apply outline-offset-4 focus-visible:outline-1 focus-visible:outline-ink; }
+    [x-cloak] { display: none !important; }
+    ::selection { @apply bg-ink text-white; }
+}
+
+@layer components {
+    .shell { @apply mx-auto w-full max-w-[1440px] px-5 sm:px-8 lg:px-12 xl:px-16; }
+    .section-pad { @apply py-20 md:py-28 lg:py-36; }
+    .eyebrow { @apply text-[10px] font-semibold uppercase tracking-[.25em] text-muted; }
+    .display-xl { @apply text-[clamp(3.4rem,7vw,7rem)] leading-[.82] tracking-[-.045em]; }
+    .display-lg { @apply text-[clamp(2.7rem,5vw,5rem)] leading-[.94] tracking-[-.035em]; }
+    .display-md { @apply text-[clamp(2.2rem,3.8vw,3.75rem)] leading-[1] tracking-[-.025em]; }
+    .copy { @apply text-[15px] leading-7 text-muted md:text-base; }
+    .btn-dark { @apply inline-flex min-h-12 items-center justify-center gap-3 bg-ink px-6 text-[11px] font-semibold uppercase tracking-[.16em] text-white transition duration-300 hover:bg-charcoal; }
+    .btn-light { @apply inline-flex min-h-12 items-center justify-center gap-3 border border-line bg-white px-6 text-[11px] font-semibold uppercase tracking-[.16em] text-ink transition duration-300 hover:border-ink; }
+    .text-link { @apply inline-flex items-center gap-3 border-b border-ink pb-1 text-[11px] font-semibold uppercase tracking-[.15em] transition hover:gap-5; }
+    .hairline { @apply border-line; }
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s var(--ease-editorial), transform .8s var(--ease-editorial); }
+    .reveal.is-visible { opacity: 1; transform: translateY(0); }
+    .image-reveal { overflow: hidden; }
+    .image-reveal > img { animation: editorial-image-in 1s var(--ease-editorial) both; }
+    .product-image { @apply aspect-[3/4] w-full overflow-hidden bg-warm; }
+    .product-image img { @apply h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.025]; }
+    .rule-title { @apply flex items-center gap-4; }
+    .rule-title::before { content: ''; @apply h-px w-8 bg-silver; }
+}
+
+@keyframes editorial-image-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal, .image-reveal { opacity: 1; transform: none; transition: none; }
+    .image-reveal > img { animation: none; }
 }
