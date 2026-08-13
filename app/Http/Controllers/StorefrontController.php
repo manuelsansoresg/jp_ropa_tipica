@@ -14,7 +14,7 @@ class StorefrontController extends Controller
     {
         return view('pages.home', [
             'categories' => Category::where('active', true)->orderBy('sort_order')->get(),
-            'products' => Product::with(['category', 'images', 'sizes'])->where('active', true)->where('featured', true)->take(8)->get(),
+            'products' => Product::with(['category', 'images', 'sizes'])->where('active', true)->where('featured', true)->orderBy('sort_order')->take(8)->get(),
             'sections' => Section::where('active', true)->get()->keyBy('key'),
             'testimonials' => Testimonial::where('active', true)->get(),
         ]);
@@ -24,7 +24,7 @@ class StorefrontController extends Controller
     {
         return view('pages.collections', [
             'categories' => Category::withCount(['products' => fn ($query) => $query->where('active', true)])->where('active', true)->orderBy('sort_order')->get(),
-            'products' => Product::with(['category', 'images', 'sizes'])->where('active', true)->get(),
+            'products' => Product::with(['category', 'images', 'sizes'])->where('active', true)->orderBy('sort_order')->get(),
         ]);
     }
 
@@ -39,7 +39,9 @@ class StorefrontController extends Controller
     public function product(string $slug): View
     {
         $product = Product::with(['category', 'images', 'sizes'])->where('slug', $slug)->where('active', true)->firstOrFail();
-        $related = Product::with(['category', 'images', 'sizes'])->where('category_id', $product->category_id)->where('id', '!=', $product->id)->where('active', true)->take(3)->get();
+        $related = Product::with(['category', 'images', 'sizes'])
+            ->when($product->category_id, fn ($query) => $query->where('category_id', $product->category_id), fn ($query) => $query->whereNull('category_id'))
+            ->where('id', '!=', $product->id)->where('active', true)->orderBy('sort_order')->take(3)->get();
 
         return view('pages.product', compact('product', 'related'));
     }

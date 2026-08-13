@@ -29,4 +29,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function isOwner(): bool
+    {
+        return strcasecmp($this->email, config('admin.owner_email')) === 0;
+    }
 }

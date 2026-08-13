@@ -54,7 +54,7 @@
     <div class="shell">
         <div class="mb-12 flex items-end justify-between reveal"><div><p class="eyebrow">Selección JV</p><h2 class="display-md mt-4">Prendas seleccionadas</h2></div><a href="{{ route('collections.index') }}" class="text-link hidden sm:inline-flex">Explorar catálogo →</a></div>
         @if($products->isNotEmpty())
-            <div class="grid grid-cols-2 gap-x-3 gap-y-12 md:gap-x-6 lg:grid-cols-4 lg:gap-y-16">@foreach($products as $product)<x-product-card :product="$product" />@endforeach</div>
+            <div class="grid grid-cols-1 gap-x-3 gap-y-12 sm:grid-cols-2 md:gap-x-6 lg:grid-cols-4 lg:gap-y-16">@foreach($products as $product)<x-product-card :product="$product" />@endforeach</div>
         @else
             <x-empty-catalog-state />
         @endif

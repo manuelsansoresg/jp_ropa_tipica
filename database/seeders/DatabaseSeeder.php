@@ -7,8 +7,10 @@ use App\Models\Product;
 use App\Models\Section;
 use App\Models\SiteSetting;
 use App\Models\Testimonial;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,11 +18,16 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
+        User::firstOrCreate(
+            ['email' => env('ADMIN_EMAIL', 'admin@jvropatipica.mx')],
+            ['name' => 'Administrador JV', 'password' => Hash::make(env('ADMIN_PASSWORD', 'Cambiar123!'))],
+        );
+
         foreach ([
             'brand_name' => 'JV Ropa Típica', 'whatsapp' => '5219999085831', 'phone_display' => '999 908 5831',
             'location' => 'Tekit, Yucatán, México', 'instagram_url' => '#', 'facebook_url' => '#',
         ] as $key => $value) {
-            SiteSetting::updateOrCreate(['key' => $key], ['value' => $value]);
+            SiteSetting::firstOrCreate(['key' => $key], ['value' => $value]);
         }
 
         $categories = [
@@ -30,7 +37,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($categories as $categoryData) {
-            $category = Category::updateOrCreate(['slug' => $categoryData['slug']], $categoryData + ['active' => true]);
+            $category = Category::firstOrCreate(['slug' => $categoryData['slug']], $categoryData + ['active' => true]);
             $items = match ($category->slug) {
                 'guayaberas' => [
                     ['Guayabera Blanca Clásica', 'guayabera-blanca-clasica', 'guayabera-clasica.jpg', 1450, 'Lino y algodón', ['Blanco', 'Marfil']],
@@ -50,28 +57,28 @@ class DatabaseSeeder extends Seeder
             };
 
             foreach ($items as [$name, $slug, $image, $price, $material, $colors]) {
-                $product = Product::updateOrCreate(['slug' => $slug], [
+                $product = Product::firstOrCreate(['slug' => $slug], [
                     'category_id' => $category->id, 'name' => $name,
                     'short_description' => 'Una pieza de líneas limpias, cómoda y cuidadosamente terminada en Yucatán.',
                     'description' => 'Diseñada para acompañar celebraciones y momentos cotidianos. Su construcción ligera, acabados precisos y carácter atemporal expresan la tradición yucateca desde una mirada contemporánea.',
                     'price' => $price, 'featured' => true, 'active' => true, 'material' => $material, 'colors' => $colors,
                 ]);
-                $product->images()->delete();
-                $product->images()->createMany([
-                    ['image' => "/images/editorial/{$image}", 'sort_order' => 1],
-                    ['image' => '/images/editorial/textura-lino.jpg', 'sort_order' => 2],
-                ]);
-                $product->sizes()->delete();
-                $product->sizes()->createMany(array_map(fn ($size) => ['name' => $size, 'stock_status' => 'Consultar'], ['CH', 'M', 'G', 'XG']));
+                if ($product->wasRecentlyCreated) {
+                    $product->images()->createMany([
+                        ['image' => "/images/editorial/{$image}", 'sort_order' => 1],
+                        ['image' => '/images/editorial/textura-lino.jpg', 'sort_order' => 2],
+                    ]);
+                    $product->sizes()->createMany(array_map(fn ($size) => ['name' => $size], ['CH', 'M', 'G', 'XG']));
+                }
             }
         }
 
-        Section::updateOrCreate(['key' => 'manifesto'], [
+        Section::firstOrCreate(['key' => 'manifesto'], [
             'subtitle' => 'Desde Yucatán', 'title' => 'Vestimos una tradición que sigue evolucionando.',
             'content' => 'En JV Ropa Típica creemos que una prenda tradicional puede conservar su esencia y al mismo tiempo formar parte del estilo actual. Seleccionamos diseños que representan la elegancia y el carácter de Yucatán, cuidando cada detalle para ofrecer prendas cómodas, auténticas y listas para acompañarte en cualquier ocasión.',
             'image' => '/images/editorial/artesania.jpg', 'active' => true,
         ]);
-        Section::updateOrCreate(['key' => 'about'], [
+        Section::firstOrCreate(['key' => 'about'], [
             'subtitle' => 'Nuestra historia', 'title' => 'Nuestra historia también se viste.',
             'content' => 'JV Ropa Típica nace en Yucatán con la intención de mantener vigente una forma de vestir que forma parte de nuestra identidad. Desde nuestros primeros modelos buscamos combinar tradición, comodidad y elegancia en prendas para ocasiones especiales y para la vida cotidiana. Hoy atendemos a clientes dentro y fuera del estado, enviando nuestras prendas a diferentes lugares de México.',
             'image' => '/images/editorial/patio-yucateco.jpg', 'active' => true,
@@ -82,7 +89,7 @@ class DatabaseSeeder extends Seeder
             ['Andrea R.', 'Pedí un vestido para un evento y llegó muy bien empacado. Excelente atención.'],
             ['Laura P.', 'El diseño está precioso y se nota mucho la calidad del bordado.'],
         ] as [$name, $text]) {
-            Testimonial::updateOrCreate(['name' => $name], ['text' => $text, 'active' => true, 'is_demo' => true]);
+            Testimonial::firstOrCreate(['name' => $name], ['text' => $text, 'active' => true, 'is_demo' => true]);
         }
     }
 }

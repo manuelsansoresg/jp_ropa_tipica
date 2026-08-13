@@ -7,7 +7,7 @@
                 <p class="mt-5 max-w-xs font-display text-2xl leading-tight text-white/85">Tradición y estilo<br>desde Yucatán.</p>
             </div>
             <div class="grid grid-cols-2 gap-8 text-xs leading-8 text-white/65">
-                <div><p class="mb-3 text-[10px] font-semibold uppercase tracking-[.2em] text-white">Colecciones</p><a class="block hover:text-white" href="{{ route('collections.show', 'guayaberas') }}">Guayaberas</a><a class="block hover:text-white" href="{{ route('collections.show', 'vestidos') }}">Vestidos</a><a class="block hover:text-white" href="{{ route('collections.show', 'pantalones') }}">Pantalones</a><a class="block hover:text-white" href="{{ route('sizes') }}">Guía de tallas</a></div>
+                <div><p class="mb-3 text-[10px] font-semibold uppercase tracking-[.2em] text-white">Colecciones</p>@foreach($menuCategories as $category)<a class="block hover:text-white" href="{{ route('collections.show', $category->slug) }}">{{ $category->name }}</a>@endforeach<a class="block hover:text-white" href="{{ route('sizes') }}">Guía de tallas</a></div>
                 <div><p class="mb-3 text-[10px] font-semibold uppercase tracking-[.2em] text-white">Atención</p><a class="block hover:text-white" href="https://wa.me/{{ $whatsapp }}">WhatsApp</a><a class="block hover:text-white" href="{{ route('contact') }}">Envíos</a><a class="block hover:text-white" href="{{ route('contact') }}#preguntas">Preguntas frecuentes</a></div>
             </div>
             <div class="text-sm leading-7 text-white/65">
